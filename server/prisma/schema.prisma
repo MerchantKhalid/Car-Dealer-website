@@ -1,0 +1,173 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  CUSTOMER
+  ADMIN
+  SALES_AGENT
+}
+
+enum FuelType {
+  PETROL
+  DIESEL
+  ELECTRIC
+  HYBRID
+}
+
+enum Transmission {
+  AUTOMATIC
+  MANUAL
+}
+
+enum BodyType {
+  SEDAN
+  SUV
+  TRUCK
+  COUPE
+  HATCHBACK
+  VAN
+}
+
+enum VehicleCondition {
+  NEW
+  USED
+  CERTIFIED_PRE_OWNED
+}
+
+enum VehicleStatus {
+  AVAILABLE
+  SOLD
+  RESERVED
+  PENDING
+}
+
+enum PaymentStatus {
+  PENDING
+  COMPLETED
+  FAILED
+  REFUNDED
+}
+
+enum OrderStatus {
+  PENDING
+  CONFIRMED
+  PROCESSING
+  COMPLETED
+  CANCELLED
+}
+
+enum TestDriveStatus {
+  PENDING
+  CONFIRMED
+  COMPLETED
+  CANCELLED
+}
+
+model User {
+  id            String          @id @default(uuid())
+  email         String          @unique
+  password      String
+  name          String
+  phone         String?
+  role          Role            @default(CUSTOMER)
+  avatar        String?
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+  orders        Order[]
+  testDrives    TestDriveBooking[]
+  wishlist      Wishlist[]
+  reviews       Review[]
+}
+
+model Vehicle {
+  id            String          @id @default(uuid())
+  make          String
+  model         String
+  year          Int
+  price         Float
+  mileage       Int
+  fuelType      FuelType
+  transmission  Transmission
+  bodyType      BodyType
+  color         String
+  vin           String          @unique
+  condition     VehicleCondition
+  status        VehicleStatus   @default(AVAILABLE)
+  description   String?
+  features      Json            @default("[]")
+  isFeatured    Boolean         @default(false)
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+  images        VehicleImage[]
+  orders        Order[]
+  testDrives    TestDriveBooking[]
+  wishlist      Wishlist[]
+  reviews       Review[]
+}
+
+model VehicleImage {
+  id          String   @id @default(uuid())
+  url         String
+  isPrimary   Boolean  @default(false)
+  vehicleId   String
+  vehicle     Vehicle  @relation(fields: [vehicleId], references: [id], onDelete: Cascade)
+}
+
+model Order {
+  id              String        @id @default(uuid())
+  userId          String
+  vehicleId       String
+  totalPrice      Float
+  paymentStatus   PaymentStatus @default(PENDING)
+  paymentMethod   String?
+  transactionId   String?
+  orderStatus     OrderStatus   @default(PENDING)
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+  user            User          @relation(fields: [userId], references: [id])
+  vehicle         Vehicle       @relation(fields: [vehicleId], references: [id])
+}
+
+model TestDriveBooking {
+  id              String          @id @default(uuid())
+  userId          String
+  vehicleId       String
+  scheduledDate   DateTime
+  scheduledTime   String
+  status          TestDriveStatus @default(PENDING)
+  notes           String?
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+  user            User            @relation(fields: [userId], references: [id])
+  vehicle         Vehicle         @relation(fields: [vehicleId], references: [id])
+}
+
+model Wishlist {
+  id          String   @id @default(uuid())
+  userId      String
+  vehicleId   String
+  createdAt   DateTime @default(now())
+  user        User     @relation(fields: [userId], references: [id])
+  vehicle     Vehicle  @relation(fields: [vehicleId], references: [id])
+
+  @@unique([userId, vehicleId])
+}
+
+model Review {
+  id          String   @id @default(uuid())
+  userId      String
+  vehicleId   String
+  rating      Int
+  comment     String?
+  createdAt   DateTime @default(now())
+  user        User     @relation(fields: [userId], references: [id])
+  vehicle     Vehicle  @relation(fields: [vehicleId], references: [id])
+
+  @@unique([userId, vehicleId])
+}

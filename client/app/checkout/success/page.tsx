@@ -15,6 +15,7 @@ export default function CheckoutSuccessPage() {
   const [status, setStatus] = useState<'loading' | 'success' | 'failed'>(
     'loading',
   );
+  const [countdown, setCountdown] = useState(5);
 
   useEffect(() => {
     if (!orderId) {
@@ -22,7 +23,6 @@ export default function CheckoutSuccessPage() {
       return;
     }
 
-    // Poll payment status — Stripe redirects here after payment
     async function checkStatus() {
       try {
         const { data } = await paymentAPI.getStatus(orderId!);
@@ -31,7 +31,6 @@ export default function CheckoutSuccessPage() {
         } else if (data.paymentStatus === 'FAILED') {
           setStatus('failed');
         } else {
-          // Still processing — retry after 2s
           setTimeout(checkStatus, 2000);
         }
       } catch {
@@ -41,6 +40,23 @@ export default function CheckoutSuccessPage() {
 
     checkStatus();
   }, [orderId, router]);
+
+  // Auto-redirect to home after 5 seconds on success
+  useEffect(() => {
+    if (status !== 'success') return;
+
+    const timer = setInterval(() => {
+      setCountdown((prev) => {
+        if (prev <= 1) {
+          clearInterval(timer);
+          router.push('/');
+        }
+        return prev - 1;
+      });
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, [status, router]);
 
   if (status === 'loading') {
     return (
@@ -57,21 +73,32 @@ export default function CheckoutSuccessPage() {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
         <div className="bg-white rounded-2xl shadow-sm border p-10 max-w-md w-full text-center">
-          <CheckCircle2 className="w-16 h-16 text-green-500 mx-auto mb-4" />
-          <h1 className="text-2xl font-bold text-gray-900 mb-2">
-            Payment Successful!
+          {/* Animated checkmark */}
+          <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6 animate-bounce">
+            <CheckCircle2 className="w-12 h-12 text-green-500" />
+          </div>
+
+          <h1 className="text-3xl font-bold text-gray-900 mb-2">
+            Payment Successful! 🎉
           </h1>
-          <p className="text-gray-500 mb-6">
+          <p className="text-gray-500 mb-2">
             Congratulations! Your vehicle purchase is confirmed. We'll contact
             you shortly with next steps.
           </p>
+
+          {/* Countdown message */}
+          <p className="text-sm text-primary-600 font-medium mb-6">
+            Redirecting to home in {countdown} second
+            {countdown !== 1 ? 's' : ''}...
+          </p>
+
           <div className="space-y-3">
+            <Button className="w-full" onClick={() => router.push('/')}>
+              Go to Home Now
+            </Button>
             <Link href="/dashboard/orders">
-              <Button className="w-full">View My Orders</Button>
-            </Link>
-            <Link href="/vehicles">
               <Button variant="outline" className="w-full">
-                Browse More Vehicles
+                View My Orders
               </Button>
             </Link>
           </div>
@@ -80,10 +107,13 @@ export default function CheckoutSuccessPage() {
     );
   }
 
+  // Failed state
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
       <div className="bg-white rounded-2xl shadow-sm border p-10 max-w-md w-full text-center">
-        <XCircle className="w-16 h-16 text-red-500 mx-auto mb-4" />
+        <div className="w-20 h-20 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-6">
+          <XCircle className="w-12 h-12 text-red-500" />
+        </div>
         <h1 className="text-2xl font-bold text-gray-900 mb-2">
           Payment Failed
         </h1>

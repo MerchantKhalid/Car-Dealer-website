@@ -2,6 +2,6 @@
   "/checkout/page": "app/checkout/page.js",
   "/checkout/success/page": "app/checkout/success/page.js",
   "/(main)/page": "app/(main)/page.js",
-  "/(main)/vehicles/[id]/page": "app/(main)/vehicles/[id]/page.js",
-  "/dashboard/page": "app/dashboard/page.js"
+  "/dashboard/page": "app/dashboard/page.js",
+  "/(main)/vehicles/[id]/page": "app/(main)/vehicles/[id]/page.js"
 }

@@ -1,4 +1,8 @@
 {
-  "/api/chat/route": "app/api/chat/route.js",
-  "/(main)/page": "app/(main)/page.js"
+  "/checkout/success/page": "app/checkout/success/page.js",
+  "/(main)/page": "app/(main)/page.js",
+  "/(main)/vehicles/page": "app/(main)/vehicles/page.js",
+  "/dashboard/orders/page": "app/dashboard/orders/page.js",
+  "/checkout/page": "app/checkout/page.js",
+  "/(main)/vehicles/[id]/page": "app/(main)/vehicles/[id]/page.js"
 }

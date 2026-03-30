@@ -22,7 +22,6 @@ import {
   Car as CarIcon,
   Palette,
   Hash,
-  MapPin,
   CheckCircle2,
   ArrowLeft,
   ShoppingCart,
@@ -46,6 +45,7 @@ export default function VehicleDetailPage() {
     notes: '',
   });
   const [submitting, setSubmitting] = useState(false);
+  const [purchasing, setPurchasing] = useState(false);
 
   useEffect(() => {
     async function fetch() {
@@ -101,17 +101,20 @@ export default function VehicleDetailPage() {
     }
   };
 
+  // ── Purchase → create order → redirect to /checkout?orderId=xxx ──
   const handlePurchase = async () => {
     if (!user) return router.push('/login');
+    setPurchasing(true);
     try {
-      const { data } = await orderAPI.create({
+      const { data: order } = await orderAPI.create({
         vehicleId: vehicle!.id,
         paymentMethod: 'stripe',
       });
-      addToast('Order created! Proceeding to payment...', 'success');
-      router.push(`/dashboard/orders`);
+      addToast('Order created! Redirecting to payment...', 'success');
+      router.push(`/checkout?orderId=${order.id}`);
     } catch (err: any) {
       addToast(err.response?.data?.error || 'Failed to create order', 'error');
+      setPurchasing(false);
     }
   };
 
@@ -250,7 +253,12 @@ export default function VehicleDetailPage() {
           {/* Action Buttons */}
           {vehicle.status === 'AVAILABLE' && (
             <div className="flex gap-3 mt-8">
-              <Button size="lg" className="flex-1" onClick={handlePurchase}>
+              <Button
+                size="lg"
+                className="flex-1"
+                onClick={handlePurchase}
+                loading={purchasing}
+              >
                 <ShoppingCart className="w-5 h-5 mr-2" /> Purchase Vehicle
               </Button>
               <Button

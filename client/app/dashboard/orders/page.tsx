@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { orderAPI } from '@/lib/api';
 import { Order } from '@/types';
 import { useToast } from '@/context/ToastContext';
@@ -8,11 +9,13 @@ import { formatPrice, formatDate, getPrimaryImage } from '@/lib/utils';
 import Badge from '@/components/ui/Badge';
 import Button from '@/components/ui/Button';
 import Image from 'next/image';
+import { CreditCard } from 'lucide-react';
 
 export default function OrdersPage() {
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
   const { addToast } = useToast();
+  const router = useRouter();
 
   useEffect(() => {
     orderAPI
@@ -87,8 +90,22 @@ export default function OrdersPage() {
                     <Badge status={order.orderStatus} />
                     <Badge status={order.paymentStatus} />
                   </div>
-                  {order.orderStatus === 'PENDING' && (
-                    <div className="mt-3">
+
+                  <div className="flex gap-2 mt-3 flex-wrap">
+                    {/* Show Pay Now if order is pending and payment not done */}
+                    {order.orderStatus === 'PENDING' &&
+                      order.paymentStatus === 'PENDING' && (
+                        <Button
+                          size="sm"
+                          onClick={() =>
+                            router.push(`/checkout?orderId=${order.id}`)
+                          }
+                        >
+                          <CreditCard className="w-4 h-4 mr-1" /> Pay Now
+                        </Button>
+                      )}
+
+                    {order.orderStatus === 'PENDING' && (
                       <Button
                         size="sm"
                         variant="danger"
@@ -96,8 +113,8 @@ export default function OrdersPage() {
                       >
                         Cancel Order
                       </Button>
-                    </div>
-                  )}
+                    )}
+                  </div>
                 </div>
               </div>
             </div>

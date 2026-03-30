@@ -21,16 +21,16 @@ A modern, full-stack car dealership web application built with Next.js, Express,
 
 ## 🛠️ Tech Stack
 
-| Layer | Technology |
-|---|---|
-| Frontend | Next.js 14, TypeScript, Tailwind CSS |
-| Backend | Node.js, Express.js, TypeScript |
-| Database | PostgreSQL (Neon cloud) |
-| ORM | Prisma 6 |
-| Auth | JWT (Access + Refresh tokens) |
-| Payments | Stripe |
-| AI Chatbot | Claude API (Anthropic) |
-| Icons | Lucide React |
+| Layer      | Technology                           |
+| ---------- | ------------------------------------ |
+| Frontend   | Next.js 14, TypeScript, Tailwind CSS |
+| Backend    | Node.js, Express.js, TypeScript      |
+| Database   | PostgreSQL (Neon cloud)              |
+| ORM        | Prisma 6                             |
+| Auth       | JWT (Access + Refresh tokens)        |
+| Payments   | Stripe                               |
+| AI Chatbot | Claude API (Anthropic)               |
+| Icons      | Lucide React                         |
 
 ---
 
@@ -183,6 +183,7 @@ The app will be running at **http://localhost:3000** 🎉
 ## 🔑 Getting API Keys
 
 ### Stripe
+
 1. Go to [dashboard.stripe.com](https://dashboard.stripe.com) and create an account
 2. Go to **Developers → API Keys**
 3. Copy **Publishable key** → `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY`
@@ -190,11 +191,13 @@ The app will be running at **http://localhost:3000** 🎉
 5. Run `stripe listen --forward-to localhost:5000/api/payments/webhook` to get `STRIPE_WEBHOOK_SECRET`
 
 ### Anthropic (AI Chatbot)
+
 1. Go to [console.anthropic.com](https://console.anthropic.com)
 2. Go to **API Keys** and create a new key
 3. Copy it → `ANTHROPIC_API_KEY`
 
 ### Neon (PostgreSQL)
+
 1. Go to [neon.tech](https://neon.tech) and create a free account
 2. Create a new project
 3. Copy the connection string → `DATABASE_URL`
@@ -205,10 +208,10 @@ The app will be running at **http://localhost:3000** 🎉
 
 Use these card numbers in test mode — no real money is charged:
 
-| Card Number | Result |
-|---|---|
-| `4242 4242 4242 4242` | ✅ Payment Success |
-| `4000 0000 0000 0002` | ❌ Card Declined |
+| Card Number           | Result                |
+| --------------------- | --------------------- |
+| `4242 4242 4242 4242` | ✅ Payment Success    |
+| `4000 0000 0000 0002` | ❌ Card Declined      |
 | `4000 0025 0000 3155` | 🔐 Requires 3D Secure |
 
 **Other fields:** Any future expiry date (e.g. `12/34`), any 3-digit CVC (e.g. `123`), any ZIP code (e.g. `12345`)
@@ -218,67 +221,74 @@ Use these card numbers in test mode — no real money is charged:
 ## 📡 API Endpoints
 
 ### Auth
-| Method | Endpoint | Description |
-|---|---|---|
-| POST | `/api/auth/register` | Register new user |
-| POST | `/api/auth/login` | Login |
-| POST | `/api/auth/logout` | Logout |
-| GET | `/api/auth/me` | Get current user |
-| PUT | `/api/auth/profile` | Update profile |
-| PUT | `/api/auth/change-password` | Change password |
-| POST | `/api/auth/refresh-token` | Refresh access token |
+
+| Method | Endpoint                    | Description          |
+| ------ | --------------------------- | -------------------- |
+| POST   | `/api/auth/register`        | Register new user    |
+| POST   | `/api/auth/login`           | Login                |
+| POST   | `/api/auth/logout`          | Logout               |
+| GET    | `/api/auth/me`              | Get current user     |
+| PUT    | `/api/auth/profile`         | Update profile       |
+| PUT    | `/api/auth/change-password` | Change password      |
+| POST   | `/api/auth/refresh-token`   | Refresh access token |
 
 ### Vehicles
-| Method | Endpoint | Description |
-|---|---|---|
-| GET | `/api/vehicles` | Get all vehicles (with filters) |
-| GET | `/api/vehicles/:id` | Get vehicle by ID |
-| GET | `/api/vehicles/featured` | Get featured vehicles |
-| GET | `/api/vehicles/search` | Search vehicles |
-| POST | `/api/vehicles` | Create vehicle (Admin) |
-| PUT | `/api/vehicles/:id` | Update vehicle (Admin) |
-| DELETE | `/api/vehicles/:id` | Delete vehicle (Admin) |
+
+| Method | Endpoint                 | Description                     |
+| ------ | ------------------------ | ------------------------------- |
+| GET    | `/api/vehicles`          | Get all vehicles (with filters) |
+| GET    | `/api/vehicles/:id`      | Get vehicle by ID               |
+| GET    | `/api/vehicles/featured` | Get featured vehicles           |
+| GET    | `/api/vehicles/search`   | Search vehicles                 |
+| POST   | `/api/vehicles`          | Create vehicle (Admin)          |
+| PUT    | `/api/vehicles/:id`      | Update vehicle (Admin)          |
+| DELETE | `/api/vehicles/:id`      | Delete vehicle (Admin)          |
 
 ### Orders
-| Method | Endpoint | Description |
-|---|---|---|
-| POST | `/api/orders` | Create order |
-| GET | `/api/orders` | Get orders |
-| GET | `/api/orders/:id` | Get order by ID |
-| PUT | `/api/orders/:id/status` | Update order status |
-| DELETE | `/api/orders/:id` | Cancel order |
+
+| Method | Endpoint                 | Description         |
+| ------ | ------------------------ | ------------------- |
+| POST   | `/api/orders`            | Create order        |
+| GET    | `/api/orders`            | Get orders          |
+| GET    | `/api/orders/:id`        | Get order by ID     |
+| PUT    | `/api/orders/:id/status` | Update order status |
+| DELETE | `/api/orders/:id`        | Cancel order        |
 
 ### Payments
-| Method | Endpoint | Description |
-|---|---|---|
-| POST | `/api/payments/create-intent` | Create Stripe payment intent |
-| POST | `/api/payments/confirm` | Confirm payment after redirect |
-| POST | `/api/payments/webhook` | Stripe webhook handler |
-| GET | `/api/payments/:orderId/status` | Get payment status |
+
+| Method | Endpoint                        | Description                    |
+| ------ | ------------------------------- | ------------------------------ |
+| POST   | `/api/payments/create-intent`   | Create Stripe payment intent   |
+| POST   | `/api/payments/confirm`         | Confirm payment after redirect |
+| POST   | `/api/payments/webhook`         | Stripe webhook handler         |
+| GET    | `/api/payments/:orderId/status` | Get payment status             |
 
 ### Test Drives
-| Method | Endpoint | Description |
-|---|---|---|
-| POST | `/api/test-drives` | Book a test drive |
-| GET | `/api/test-drives` | Get test drives |
-| PUT | `/api/test-drives/:id` | Update test drive |
+
+| Method | Endpoint               | Description       |
+| ------ | ---------------------- | ----------------- |
+| POST   | `/api/test-drives`     | Book a test drive |
+| GET    | `/api/test-drives`     | Get test drives   |
+| PUT    | `/api/test-drives/:id` | Update test drive |
 | DELETE | `/api/test-drives/:id` | Cancel test drive |
 
 ### Wishlist
-| Method | Endpoint | Description |
-|---|---|---|
-| GET | `/api/wishlist` | Get wishlist |
-| POST | `/api/wishlist` | Add to wishlist |
-| DELETE | `/api/wishlist/:vehicleId` | Remove from wishlist |
-| GET | `/api/wishlist/check/:vehicleId` | Check if wishlisted |
+
+| Method | Endpoint                         | Description          |
+| ------ | -------------------------------- | -------------------- |
+| GET    | `/api/wishlist`                  | Get wishlist         |
+| POST   | `/api/wishlist`                  | Add to wishlist      |
+| DELETE | `/api/wishlist/:vehicleId`       | Remove from wishlist |
+| GET    | `/api/wishlist/check/:vehicleId` | Check if wishlisted  |
 
 ### Admin
-| Method | Endpoint | Description |
-|---|---|---|
-| GET | `/api/admin/stats` | Get dashboard stats |
-| GET | `/api/admin/users` | Get all users |
-| PUT | `/api/admin/users/:id/role` | Update user role |
-| GET | `/api/admin/reports` | Get sales reports |
+
+| Method | Endpoint                    | Description         |
+| ------ | --------------------------- | ------------------- |
+| GET    | `/api/admin/stats`          | Get dashboard stats |
+| GET    | `/api/admin/users`          | Get all users       |
+| PUT    | `/api/admin/users/:id/role` | Update user role    |
+| GET    | `/api/admin/reports`        | Get sales reports   |
 
 ---
 
@@ -296,17 +306,18 @@ Use these card numbers in test mode — no real money is charged:
 
 ## 👤 User Roles
 
-| Role | Access |
-|---|---|
-| `CUSTOMER` | Browse, purchase, wishlist, test drives, dashboard |
-| `SALES_AGENT` | All customer access + view all orders & test drives |
-| `ADMIN` | Full access including inventory management and user management |
+| Role          | Access                                                         |
+| ------------- | -------------------------------------------------------------- |
+| `CUSTOMER`    | Browse, purchase, wishlist, test drives, dashboard             |
+| `SALES_AGENT` | All customer access + view all orders & test drives            |
+| `ADMIN`       | Full access including inventory management and user management |
 
 ---
 
 ## 📜 Available Scripts
 
 ### Server
+
 ```bash
 npm run dev      # Start development server with hot reload
 npm run build    # Build for production
@@ -315,6 +326,7 @@ npm run seed     # Seed database with sample data
 ```
 
 ### Client
+
 ```bash
 npm run dev      # Start development server
 npm run build    # Build for production
@@ -326,27 +338,62 @@ npm run lint     # Run ESLint
 
 ## 🌐 Pages
 
-| Page | Route | Access |
-|---|---|---|
-| Home | `/` | Public |
-| Vehicle Inventory | `/vehicles` | Public |
-| Vehicle Detail | `/vehicles/:id` | Public |
-| About | `/about` | Public |
-| Contact | `/contact` | Public |
-| Login | `/login` | Guest only |
-| Register | `/register` | Guest only |
-| Checkout | `/checkout` | Authenticated |
-| Payment Success | `/checkout/success` | Authenticated |
-| User Dashboard | `/dashboard` | Authenticated |
-| My Orders | `/dashboard/orders` | Authenticated |
-| My Test Drives | `/dashboard/test-drives` | Authenticated |
-| My Wishlist | `/dashboard/wishlist` | Authenticated |
-| Settings | `/dashboard/settings` | Authenticated |
-| Admin Dashboard | `/admin/dashboard` | Admin only |
-| Admin Inventory | `/admin/inventory` | Admin only |
-| Admin Orders | `/admin/orders` | Admin only |
-| Admin Test Drives | `/admin/test-drives` | Admin only |
-| Admin Users | `/admin/users` | Admin only |
+| Page              | Route                    | Access        |
+| ----------------- | ------------------------ | ------------- |
+| Home              | `/`                      | Public        |
+| Vehicle Inventory | `/vehicles`              | Public        |
+| Vehicle Detail    | `/vehicles/:id`          | Public        |
+| About             | `/about`                 | Public        |
+| Contact           | `/contact`               | Public        |
+| Login             | `/login`                 | Guest only    |
+| Register          | `/register`              | Guest only    |
+| Checkout          | `/checkout`              | Authenticated |
+| Payment Success   | `/checkout/success`      | Authenticated |
+| User Dashboard    | `/dashboard`             | Authenticated |
+| My Orders         | `/dashboard/orders`      | Authenticated |
+| My Test Drives    | `/dashboard/test-drives` | Authenticated |
+| My Wishlist       | `/dashboard/wishlist`    | Authenticated |
+| Settings          | `/dashboard/settings`    | Authenticated |
+| Admin Dashboard   | `/admin/dashboard`       | Admin only    |
+| Admin Inventory   | `/admin/inventory`       | Admin only    |
+| Admin Orders      | `/admin/orders`          | Admin only    |
+| Admin Test Drives | `/admin/test-drives`     | Admin only    |
+| Admin Users       | `/admin/users`           | Admin only    |
 
 ---
 
+## 🔐 Test Login Credentials
+
+> Make sure you have run `npm run seed` in the server folder first.
+
+### Admin
+
+| Field    | Value                           |
+| -------- | ------------------------------- |
+| Email    | `admin@drivehub.com`            |
+| Password | `Admin123!`                     |
+| Access   | Full admin panel + all features |
+
+### Sales Agent
+
+| Field    | Value                         |
+| -------- | ----------------------------- |
+| Email    | `sarah@drivehub.com`          |
+| Password | `Admin123!`                   |
+| Access   | View all orders & test drives |
+
+### Customer 1
+
+| Field    | Value                       |
+| -------- | --------------------------- |
+| Email    | `john@example.com`          |
+| Password | `User123!`                  |
+| Access   | Dashboard, orders, wishlist |
+
+### Customer 2
+
+| Field    | Value                       |
+| -------- | --------------------------- |
+| Email    | `jane@example.com`          |
+| Password | `User123!`                  |
+| Access   | Dashboard, orders, wishlist |

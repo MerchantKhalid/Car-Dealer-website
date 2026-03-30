@@ -3,12 +3,9 @@ import Stripe from 'stripe';
 import prisma from '../utils/prisma';
 import { AppError } from '../middleware/errorHandler';
 
-const stripe = new Stripe(
-  process.env.STRIPE_SECRET_KEY || 'sk_test_placeholder',
-  {
-    apiVersion: '2023-10-16' as any,
-  },
-);
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
+  apiVersion: '2024-06-20' as any,
+});
 
 export async function createPaymentIntent(
   req: Request,
@@ -22,16 +19,23 @@ export async function createPaymentIntent(
       where: { id: orderId },
       include: { vehicle: true },
     });
+
     if (!order) throw new AppError('Order not found', 404);
     if (order.userId !== req.user!.userId)
       throw new AppError('Unauthorized', 403);
+    if (order.paymentStatus === 'COMPLETED')
+      throw new AppError('Order already paid', 400);
 
     const paymentIntent = await stripe.paymentIntents.create({
-      amount: Math.round(order.totalPrice * 100),
+      amount: Math.round(order.totalPrice * 100), // cents
       currency: 'usd',
-      metadata: { orderId: order.id, vehicleId: order.vehicleId },
+      metadata: {
+        orderId: order.id,
+        vehicleId: order.vehicleId,
+      },
     });
 
+    // Save the Stripe transaction ID
     await prisma.order.update({
       where: { id: orderId },
       data: { transactionId: paymentIntent.id },
@@ -50,10 +54,11 @@ export async function handleWebhook(
 ) {
   try {
     const sig = req.headers['stripe-signature'] as string;
+
     const event = stripe.webhooks.constructEvent(
       req.body,
       sig,
-      process.env.STRIPE_WEBHOOK_SECRET || '',
+      process.env.STRIPE_WEBHOOK_SECRET!,
     );
 
     if (event.type === 'payment_intent.succeeded') {
@@ -101,7 +106,11 @@ export async function getPaymentStatus(
   try {
     const order = await prisma.order.findUnique({
       where: { id: req.params.orderId },
-      select: { paymentStatus: true, transactionId: true, orderStatus: true },
+      select: {
+        paymentStatus: true,
+        transactionId: true,
+        orderStatus: true,
+      },
     });
     if (!order) throw new AppError('Order not found', 404);
     res.json(order);

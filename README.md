@@ -381,19 +381,3 @@ npm run lint     # Run ESLint
 | Email    | `sarah@drivehub.com`          |
 | Password | `Admin123!`                   |
 | Access   | View all orders & test drives |
-
-### Customer 1
-
-| Field    | Value                       |
-| -------- | --------------------------- |
-| Email    | `john@example.com`          |
-| Password | `User123!`                  |
-| Access   | Dashboard, orders, wishlist |
-
-### Customer 2
-
-| Field    | Value                       |
-| -------- | --------------------------- |
-| Email    | `jane@example.com`          |
-| Password | `User123!`                  |
-| Access   | Dashboard, orders, wishlist |

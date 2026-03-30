@@ -1,6 +1,84 @@
+// // import type { Config } from 'tailwindcss';
+
+// // const config: Config = {
+// //   content: [
+// //     './pages/**/*.{js,ts,jsx,tsx,mdx}',
+// //     './components/**/*.{js,ts,jsx,tsx,mdx}',
+// //     './app/**/*.{js,ts,jsx,tsx,mdx}',
+// //   ],
+// //   theme: {
+// //     extend: {
+// //       colors: {
+// //         primary: {
+// //           50: '#eff6ff',
+// //           100: '#dbeafe',
+// //           200: '#bfdbfe',
+// //           300: '#93c5fd',
+// //           400: '#60a5fa',
+// //           500: '#3b82f6',
+// //           600: '#2563eb',
+// //           700: '#1d4ed8',
+// //           800: '#1e40af',
+// //           900: '#1e3a8a',
+// //         },
+// //         accent: {
+// //           50: '#fef3c7',
+// //           100: '#fde68a',
+// //           400: '#f59e0b',
+// //           500: '#d97706',
+// //           600: '#b45309',
+// //         },
+// //       },
+// //     },
+// //   },
+// //   plugins: [],
+// // };
+
+// // export default config;
+
+// import type { Config } from 'tailwindcss';
+
+// const config: Config = {
+//   darkMode: 'class', // ← enables dark mode via class on <html>
+//   content: [
+//     './pages/**/*.{js,ts,jsx,tsx,mdx}',
+//     './components/**/*.{js,ts,jsx,tsx,mdx}',
+//     './app/**/*.{js,ts,jsx,tsx,mdx}',
+//   ],
+//   theme: {
+//     extend: {
+//       colors: {
+//         primary: {
+//           50: '#eff6ff',
+//           100: '#dbeafe',
+//           200: '#bfdbfe',
+//           300: '#93c5fd',
+//           400: '#60a5fa',
+//           500: '#3b82f6',
+//           600: '#2563eb',
+//           700: '#1d4ed8',
+//           800: '#1e40af',
+//           900: '#1e3a8a',
+//         },
+//         accent: {
+//           50: '#fef3c7',
+//           100: '#fde68a',
+//           400: '#f59e0b',
+//           500: '#d97706',
+//           600: '#b45309',
+//         },
+//       },
+//     },
+//   },
+//   plugins: [],
+// };
+
+// export default config;
+
 import type { Config } from 'tailwindcss';
 
 const config: Config = {
+  darkMode: 'class', // ← required for dark: classes to work
   content: [
     './pages/**/*.{js,ts,jsx,tsx,mdx}',
     './components/**/*.{js,ts,jsx,tsx,mdx}',

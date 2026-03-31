@@ -1,26 +1,20 @@
-
-
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
+import { paymentAPI } from '@/lib/api';
 import { CheckCircle2, XCircle, Loader2 } from 'lucide-react';
 import Button from '@/components/ui/Button';
 import Link from 'next/link';
-import api from '@/lib/api';
 
-export default function CheckoutSuccessPage() {
+function CheckoutSuccessContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
-
   const orderId = searchParams.get('orderId');
-  const paymentIntent = searchParams.get('payment_intent');
-  const redirectStatus = searchParams.get('redirect_status'); // "succeeded" | "failed"
 
   const [status, setStatus] = useState<'loading' | 'success' | 'failed'>(
     'loading',
   );
-  const [countdown, setCountdown] = useState(5);
 
   useEffect(() => {
     if (!orderId) {
@@ -28,55 +22,25 @@ export default function CheckoutSuccessPage() {
       return;
     }
 
-    async function confirm() {
+    // Poll payment status — Stripe redirects here after payment
+    async function checkStatus() {
       try {
-        // Stripe sends redirect_status in the URL — use it directly
-        if (redirectStatus === 'succeeded') {
-          // Tell our server to mark the order COMPLETED
-          await api.post('/payments/confirm', { orderId, paymentIntent });
-          setStatus('success');
-          return;
-        }
-
-        if (redirectStatus === 'failed' || redirectStatus === 'canceled') {
-          setStatus('failed');
-          return;
-        }
-
-        // Fallback: ask server for current payment status
-        const { data } = await api.get(`/payments/${orderId}/status`);
+        const { data } = await paymentAPI.getStatus(orderId!);
         if (data.paymentStatus === 'COMPLETED') {
           setStatus('success');
-        } else {
+        } else if (data.paymentStatus === 'FAILED') {
           setStatus('failed');
+        } else {
+          // Still processing — retry after 2s
+          setTimeout(checkStatus, 2000);
         }
       } catch {
-        // If server call fails but Stripe said succeeded — still show success
-        if (redirectStatus === 'succeeded') {
-          setStatus('success');
-        } else {
-          setStatus('failed');
-        }
+        setStatus('failed');
       }
     }
 
-    confirm();
-  }, [orderId, paymentIntent, redirectStatus, router]);
-
-  // Auto-redirect to home after countdown on success
-  useEffect(() => {
-    if (status !== 'success') return;
-    const timer = setInterval(() => {
-      setCountdown((prev) => {
-        if (prev <= 1) {
-          clearInterval(timer);
-          router.push('/');
-        }
-        return prev - 1;
-      });
-    }, 1000);
-    return () => clearInterval(timer);
-  }, [status, router]);
+    checkStatus();
+  }, [orderId, router]);
 
   if (status === 'loading') {
     return (
@@ -93,27 +57,21 @@ export default function CheckoutSuccessPage() {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
         <div className="bg-white rounded-2xl shadow-sm border p-10 max-w-md w-full text-center">
-          <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
-            <CheckCircle2 className="w-12 h-12 text-green-500" />
-          </div>
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">
-            Payment Successful! 🎉
+          <CheckCircle2 className="w-16 h-16 text-green-500 mx-auto mb-4" />
+          <h1 className="text-2xl font-bold text-gray-900 mb-2">
+            Payment Successful!
           </h1>
-          <p className="text-gray-500 mb-2">
+          <p className="text-gray-500 mb-6">
             Congratulations! Your vehicle purchase is confirmed. We'll contact
             you shortly with next steps.
           </p>
-          <p className="text-sm text-primary-600 font-medium mb-6">
-            Redirecting to home in {countdown} second
-            {countdown !== 1 ? 's' : ''}...
-          </p>
           <div className="space-y-3">
-            <Button className="w-full" onClick={() => router.push('/')}>
-              Go to Home Now
-            </Button>
             <Link href="/dashboard/orders">
+              <Button className="w-full">View My Orders</Button>
+            </Link>
+            <Link href="/vehicles">
               <Button variant="outline" className="w-full">
-                View My Orders
+                Browse More Vehicles
               </Button>
             </Link>
           </div>
@@ -125,9 +83,7 @@ export default function CheckoutSuccessPage() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
       <div className="bg-white rounded-2xl shadow-sm border p-10 max-w-md w-full text-center">
-        <div className="w-20 h-20 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-6">
-          <XCircle className="w-12 h-12 text-red-500" />
-        </div>
+        <XCircle className="w-16 h-16 text-red-500 mx-auto mb-4" />
         <h1 className="text-2xl font-bold text-gray-900 mb-2">
           Payment Failed
         </h1>
@@ -147,5 +103,24 @@ export default function CheckoutSuccessPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+function LoadingFallback() {
+  return (
+    <div className="min-h-screen flex items-center justify-center">
+      <div className="text-center space-y-4">
+        <Loader2 className="w-12 h-12 animate-spin text-primary-600 mx-auto" />
+        <p className="text-gray-600">Confirming your payment...</p>
+      </div>
+    </div>
+  );
+}
+
+export default function CheckoutSuccessPage() {
+  return (
+    <Suspense fallback={<LoadingFallback />}>
+      <CheckoutSuccessContent />
+    </Suspense>
   );
 }

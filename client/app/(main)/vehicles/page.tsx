@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { vehicleAPI } from '@/lib/api';
 import { Vehicle, PaginationInfo } from '@/types';
@@ -10,7 +10,7 @@ import Pagination from '@/components/ui/Pagination';
 import { VehicleCardSkeleton } from '@/components/ui/Skeleton';
 import { Grid3X3, List, Search } from 'lucide-react';
 
-export default function VehiclesPage() {
+function VehiclesContent() {
   const searchParams = useSearchParams();
   const [vehicles, setVehicles] = useState<Vehicle[]>([]);
   const [pagination, setPagination] = useState<PaginationInfo>({
@@ -182,5 +182,29 @@ export default function VehiclesPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+function VehiclesPageSkeleton() {
+  return (
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="mb-6">
+        <div className="h-9 bg-gray-200 rounded w-48 animate-pulse" />
+        <div className="h-5 bg-gray-100 rounded w-32 mt-2 animate-pulse" />
+      </div>
+      <div className="grid gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
+        {[...Array(6)].map((_, i) => (
+          <VehicleCardSkeleton key={i} />
+        ))}
+      </div>
+    </div>
+  );
+}
+
+export default function VehiclesPage() {
+  return (
+    <Suspense fallback={<VehiclesPageSkeleton />}>
+      <VehiclesContent />
+    </Suspense>
   );
 }

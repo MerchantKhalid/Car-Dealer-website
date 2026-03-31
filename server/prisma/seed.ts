@@ -46,9 +46,9 @@ async function main() {
 
   const customer1 = await prisma.user.create({
     data: {
-      email: 'john@example.com',
+      email: 'khalidhasan@mail.com',
       password: userPassword,
-      name: 'John Doe',
+      name: 'Khalid Hasan',
       phone: '+1-555-0200',
       role: 'CUSTOMER',
     },
@@ -56,9 +56,9 @@ async function main() {
 
   const customer2 = await prisma.user.create({
     data: {
-      email: 'jane@example.com',
+      email: 'jane@mail.com',
       password: userPassword,
-      name: 'Jane Smith',
+      name: 'Jany Hasan',
       phone: '+1-555-0201',
       role: 'CUSTOMER',
     },
@@ -738,7 +738,7 @@ async function main() {
 
   console.log('✅ Seed data created successfully!');
   console.log('Admin: admin@drivehub.com / Admin123!');
-  console.log('Customer: john@example.com / User123!');
+  console.log('Customer: khalidhasan@mail.com / User123!');
 }
 
 main()
